@@ -43,6 +43,7 @@ dependencies {
     def rxjava_version = "2.2.1"
     def kodein_version = "7.10.0"
     def csv_version = "1.2.0"
+    def lifecycle_version = "2.2.0"
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
@@ -53,6 +54,9 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$appcompat_version"
     implementation "androidx.cardview:cardview:$card_view_version"
     implementation "androidx.constraintlayout:constraintlayout:$constraint_layout_version"
+
+    //Material design
+    implementation "com.google.android.material:material:1.6.0-alpha03"
 
     //Retrofit2
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
@@ -74,8 +78,19 @@ dependencies {
     // DI
     implementation "org.kodein.di:kodein-di-framework-android-x:$kodein_version"
 
+    // Koin
+    implementation 'org.koin:koin-androidx-scope:2.0.1'
+    implementation 'org.koin:koin-androidx-viewmodel:2.0.1'
+
     // CSV
     implementation "com.github.doyaaaaaken:kotlin-csv-jvm:$csv_version"
+
+    // ViewModel and LiveData
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-reactivestreams:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
 
     // Basic tests
     testImplementation 'junit:junit:4.13.2'
