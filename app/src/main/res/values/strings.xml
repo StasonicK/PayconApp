@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">PayconApp</string>
+
+    <!-- Common -->
+    <string name="sign_of_ruble">₽</string>
+    <string name="progress_loading_date">Загрузка</string>
+    <string name="error_title">Ошибка</string>
+
+    <!-- Goods fragment -->
+    <string name="goods_title">Список товаров</string>
+    <string name="goods_load_from_api">Загрузить из API</string>
+    <string name="goods_load_from_file">Загрузить из файла</string>
 </resources>
