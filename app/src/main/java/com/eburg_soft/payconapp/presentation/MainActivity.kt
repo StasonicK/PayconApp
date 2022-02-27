@@ -1,7 +1,8 @@
-package com.eburg_soft.payconapp
+package com.eburg_soft.payconapp.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.eburg_soft.payconapp.R
 
 class MainActivity : AppCompatActivity() {
 
