@@ -3,6 +3,7 @@ package com.eburg_soft.payconapp.presentation.fragments
 import android.app.ProgressDialog
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,14 +24,17 @@ class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware {
 
     private val viewModelFactory: GoodsViewModelFactory by instance()
     private val viewModel: GoodsViewModel by lazy {
-        ViewModelProvider(this,viewModelFactory).get(GoodsViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(GoodsViewModel::class.java)
     }
     private var dialog: ProgressDialog? = null
     private val adapter = GoodsAdapter()
 
+    private var savedInstanceState: Bundle? = null
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        this.savedInstanceState = savedInstanceState
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,21 +64,51 @@ class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware {
 
     private fun showGoods(goods: List<GoodModel>) {
         adapter.submit(goods)
+        restorePreviousUIState()
+        animateRecyclerViewOnlyInTheBeginning()
+    }
+
+    private fun restorePreviousUIState() {
+        savedInstanceState?.let {
+            val lastItemPosition = it.getInt(KEY_LAST_ITEM_POSITION)
+            binding.goodsRecycler.scrollToPosition(lastItemPosition)
+        }
+    }
+
+    private fun animateRecyclerViewOnlyInTheBeginning() {
+        if (getLastItemPosition() == 0) {
+            binding.goodsRecycler.layoutAnimation =
+                AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_fall_down)
+        }
+    }
+
+    private fun getLastItemPosition(): Int {
+        var lastItemPosition = 0
+
+        savedInstanceState?.let {
+            if (it.containsKey(KEY_LAST_ITEM_POSITION)) {
+                lastItemPosition = it.getInt(KEY_LAST_ITEM_POSITION)
+            }
+        }
+        return lastItemPosition
     }
 
     private fun showLoading(show: Boolean) {
         if (show) {
             dialog = ProgressDialog(requireContext())
-            dialog!!.setMessage(requireContext().getString(R.string.progress_loading_date))
-            dialog!!.isIndeterminate = true
-            dialog!!.setCanceledOnTouchOutside(false)
-            dialog!!.show()
-        } else dialog = null
-        val iii = 1
+            dialog!!.setTitle(getString(R.string.progress_loading_date));
+            dialog!!.setCancelable(false);
+            dialog!!.isIndeterminate = true;
+            dialog!!.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog!!.show();
+        } else {
+            dialog?.dismiss()
+        }
     }
 
     companion object {
 
         fun newInstance() = GoodsFragment()
+        private const val KEY_LAST_ITEM_POSITION = "KEY_LAST_ITEM_POSITION"
     }
 }
