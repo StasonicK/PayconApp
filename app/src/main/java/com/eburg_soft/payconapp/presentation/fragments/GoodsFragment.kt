@@ -108,7 +108,7 @@ class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware {
 
         try {
 //            chooserIntent.type = "file"
-            getFileResult.launch(chooserIntent)
+    //        getFileResult.launch(chooserIntent)
         } catch (ex: ActivityNotFoundException) {
             Toast.makeText(
                 requireContext(),
