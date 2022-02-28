@@ -1,9 +1,15 @@
 package com.eburg_soft.payconapp.presentation.fragments
 
+import android.app.Activity
 import android.app.ProgressDialog
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,11 +36,31 @@ class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware {
     private val adapter = GoodsAdapter()
 
     private var savedInstanceState: Bundle? = null
+    private val getFileResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode != Activity.RESULT_OK) return@registerForActivityResult
+            it.data?.data?.path?.let { path ->
+                viewModel.showGoodsFromFile(path
+//                    .substring(path.lastIndexOf("/") + 1)
+                )
+            }
+        }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         this.savedInstanceState = savedInstanceState
+
+        savedInstanceState?.let {
+            val fragmentState = it.getBundle(FRAGMENT_STATE) ?: return@let
+            val items = fragmentState.getParcelableArrayList(ITEMS) ?: emptyList<GoodModel>()
+            adapter.submit(items)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBundle(FRAGMENT_STATE, bundleOf(ITEMS to adapter.items))
+        super.onSaveInstanceState(outState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -51,8 +77,44 @@ class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware {
             goodsRecycler.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             goodsRecycler.setHasFixedSize(true)
 
-            loadFromApiBtn.setOnClickListener { viewModel.getGoodsFromApi() }
-            loadFromFileBtn.setOnClickListener { }
+            loadFromApiBtn.setOnClickListener { viewModel.showGoodsFromApi() }
+            loadFromFileBtn.setOnClickListener { openFile() }
+        }
+    }
+
+    private fun openFile() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+//        intent.type = "file"
+        intent.type = "text/csv"
+//        intent.type = "file"
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+
+        // special intent for Samsung file manager
+        val sIntent = Intent("com.sec.android.app.myfiles.PICK_DATA")
+
+        // if you want any file type, you can skip next line
+//        sIntent.putExtra("CONTENT_TYPE", "file")
+        sIntent.putExtra("CONTENT_TYPE", "text/csv")
+        sIntent.addCategory(Intent.CATEGORY_DEFAULT)
+
+        val chooserIntent: Intent
+        if (sIntent.resolveActivity(requireContext().packageManager) != null) {
+            // it is device with Samsung file manager
+            chooserIntent = Intent.createChooser(sIntent, "Открыть файл")
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(intent))
+        } else {
+            chooserIntent = Intent.createChooser(intent, "Открыть файл")
+        }
+
+        try {
+//            chooserIntent.type = "file"
+            getFileResult.launch(chooserIntent)
+        } catch (ex: ActivityNotFoundException) {
+            Toast.makeText(
+                requireContext(),
+                "Не найден подходящий файловый менеджер",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -109,6 +171,9 @@ class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware {
     companion object {
 
         fun newInstance() = GoodsFragment()
-        private const val KEY_LAST_ITEM_POSITION = "KEY_LAST_ITEM_POSITION"
+        private const val FRAGMENT_STATE = "fragment_state"
+        private const val KEY_LAST_ITEM_POSITION = "key_last_item_position"
+        private const val ITEMS = "key_last_item_position"
+        private const val PICKFILE_REQUEST_CODE = 777999
     }
 }
