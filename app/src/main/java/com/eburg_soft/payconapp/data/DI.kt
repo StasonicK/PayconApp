@@ -4,8 +4,8 @@ import com.eburg_soft.payconapp.data.network.NetworkConnectionInterceptor
 import com.eburg_soft.payconapp.data.network.PayconApi
 import com.eburg_soft.payconapp.data.repositories.PayconRepositoryImpl
 import com.eburg_soft.payconapp.domain.repositories.PayconRepository
-import com.eburg_soft.payconapp.presentation.fragments.GoodsViewModel
-import com.eburg_soft.payconapp.presentation.fragments.GoodsViewModelFactory
+import com.eburg_soft.payconapp.presentation.screens.viewModels.goods.GoodsViewModel
+import com.eburg_soft.payconapp.presentation.screens.viewModels.goods.GoodsViewModelFactory
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.factory

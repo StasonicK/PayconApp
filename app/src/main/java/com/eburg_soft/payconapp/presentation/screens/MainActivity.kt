@@ -1,9 +1,9 @@
-package com.eburg_soft.payconapp.presentation
+package com.eburg_soft.payconapp.presentation.screens
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.eburg_soft.payconapp.R
-import com.eburg_soft.payconapp.presentation.fragments.GoodsFragment
+import com.eburg_soft.payconapp.presentation.screens.fragments.goods.GoodsFragment
 
 class MainActivity : AppCompatActivity() {
 

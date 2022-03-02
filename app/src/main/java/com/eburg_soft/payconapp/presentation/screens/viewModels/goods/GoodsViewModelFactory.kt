@@ -1,4 +1,4 @@
-package com.eburg_soft.payconapp.presentation.fragments
+package com.eburg_soft.payconapp.presentation.screens.viewModels.goods
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

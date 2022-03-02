@@ -1,4 +1,4 @@
-package com.eburg_soft.payconapp.presentation.fragments
+package com.eburg_soft.payconapp.presentation.screens.fragments.goods
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.eburg_soft.payconapp.R
 import com.eburg_soft.payconapp.databinding.ItemGoodBinding
 import com.eburg_soft.payconapp.domain.models.GoodModel
-import com.eburg_soft.payconapp.presentation.fragments.GoodsAdapter.GoodViewHolder
+import com.eburg_soft.payconapp.presentation.screens.fragments.goods.GoodsAdapter.GoodViewHolder
 
 class GoodsAdapter() : RecyclerView.Adapter<GoodViewHolder>() {
 

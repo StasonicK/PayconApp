@@ -1,4 +1,4 @@
-package com.eburg_soft.payconapp.presentation.fragments
+package com.eburg_soft.payconapp.presentation.screens.fragments.goods
 
 import androidx.recyclerview.widget.DiffUtil
 import com.eburg_soft.payconapp.domain.models.GoodModel

@@ -1,4 +1,4 @@
-package com.eburg_soft.payconapp.presentation.fragments
+package com.eburg_soft.payconapp.presentation.screens.viewModels.goods
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -6,6 +6,7 @@ import com.eburg_soft.payconapp.domain.models.GoodModel
 import com.eburg_soft.payconapp.domain.repositories.PayconRepository
 import com.github.doyaaaaaken.kotlincsv.client.CsvReader
 import io.reactivex.android.schedulers.AndroidSchedulers
+import java.io.File
 
 class GoodsViewModel(private val payconRepository: PayconRepository) : ViewModel() {
 
@@ -38,14 +39,14 @@ class GoodsViewModel(private val payconRepository: PayconRepository) : ViewModel
             .subscribe()
     }
 
-    fun showGoodsFromFile(fileName: String) {
+    fun showGoodsFromFile(file: File) {
         isLoadingMutableLiveData.value = true
         errorMessageMutableLiveData.value = null
 
         val csvReader = CsvReader()
         val list = mutableListOf<GoodModel>()
 
-        csvReader.open(fileName) {
+        csvReader.open(file) {
             readAllWithHeaderAsSequence().forEach { row: Map<String, String> ->
                 val name = row["name"] ?: return@forEach
                 val priceString = row["price"] ?: return@forEach
