@@ -1,11 +1,13 @@
 package com.eburg_soft.payconapp.presentation.screens.fragments.goods
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
 import android.content.ContentUris
-import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build.VERSION
@@ -20,6 +22,8 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -36,7 +40,7 @@ import org.kodein.di.android.x.closestDI
 import org.kodein.di.instance
 import java.io.File
 
-class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware {
+class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware, ActivityCompat.OnRequestPermissionsResultCallback {
 
     override val di by closestDI()
     private var _binding: FragmentGoodsBinding? = null
@@ -50,14 +54,37 @@ class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware {
     private val adapter = GoodsAdapter()
 
     private var savedInstanceState: Bundle? = null
+    private var isAbleReadFiles = false
+
+    @SuppressLint("MissingPermission")
+    private val permissionRequest =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            if (permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true) {
+                isAbleReadFiles = true
+            } else {
+                isAbleReadFiles = true
+            }
+        }
     private val getFileResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode != Activity.RESULT_OK) return@registerForActivityResult
             it.data?.data?.let { uri ->
                 val path = getPath(uri) ?: return@let
-                viewModel.showGoodsFromFile(File(path))
+
+                when (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                )) {
+                    PackageManager.PERMISSION_GRANTED -> viewModel.showGoodsFromFile(File(path))
+                    else -> requestReadExternalStoragePermission()
+                }
             }
         }
+
+    private fun requestReadExternalStoragePermission() {
+//        registerForActivityResult()
+//        requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),200)
+    }
 
     private fun getPath(uri: Uri): String? {
 
@@ -66,7 +93,7 @@ class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware {
         // DocumentProvider
 
         // DocumentProvider
-        if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
+        if (isKitKat && DocumentsContract.isDocumentUri(requireContext(), uri)) {
             // ExternalStorageProvider
             if (isExternalStorageDocument(uri)) {
                 val docId = DocumentsContract.getDocumentId(uri)
@@ -82,7 +109,7 @@ class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware {
                 val contentUri = ContentUris.withAppendedId(
                     Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id)
                 )
-                return getDataColumn(requireContext(), contentUri, null, null)
+                return getDataColumn(contentUri, null, null)
             } else if (isMediaDocument(uri)) {
                 val docId = DocumentsContract.getDocumentId(uri)
                 val split = docId.split(":").toTypedArray()
@@ -96,13 +123,11 @@ class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware {
                     contentUri = Audio.Media.EXTERNAL_CONTENT_URI
                 }
                 val selection = "_id=?"
-                val selectionArgs = arrayOf(
-                    split[1]
-                )
-                return getDataColumn(context, contentUri, selection, selectionArgs)
+                val selectionArgs = arrayOf(split[1])
+                return getDataColumn(contentUri!!, selection, selectionArgs)
             }
         } else if ("content".equals(uri.scheme, ignoreCase = true)) {
-            return getDataColumn(context, uri, null, null)
+            return getDataColumn(uri, null, null)
         } else if ("file".equals(uri.scheme, ignoreCase = true)) {
             return uri.path!!
         }
@@ -114,15 +139,14 @@ class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware {
      * Get the value of the data column for this Uri. This is useful for
      * MediaStore Uris, and other file-based ContentProviders.
      *
-     * @param context The context.
      * @param uri The Uri to query.
      * @param selection (Optional) Filter used in the query.
      * @param selectionArgs (Optional) Selection arguments used in the query.
      * @return The value of the _data column, which is typically a file path.
      */
     private fun getDataColumn(
-        context: Context, uri: Uri, selection: String?,
-        selectionArgs: Array<String?>?
+        uri: Uri, selection: String?,
+        selectionArgs: Array<String>?
     ): String? {
         var cursor: Cursor? = null
         val column = "_data"
@@ -131,7 +155,7 @@ class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware {
         )
 
         try {
-            cursor = context.contentResolver.query(
+            cursor = requireContext().contentResolver.query(
                 uri, projection, selection, selectionArgs,
                 null
             )
@@ -192,6 +216,7 @@ class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware {
         _binding = FragmentGoodsBinding.bind(view)
         setupUi()
         observerLiveData()
+        getPermission()
     }
 
     private fun setupUi() {
@@ -207,16 +232,13 @@ class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware {
 
     private fun openFile() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
-//        intent.type = "file"
         intent.type = "text/csv"
-//        intent.type = "file"
         intent.addCategory(Intent.CATEGORY_OPENABLE)
 
         // special intent for Samsung file manager
         val sIntent = Intent("com.sec.android.app.myfiles.PICK_DATA")
 
         // if you want any file type, you can skip next line
-//        sIntent.putExtra("CONTENT_TYPE", "file")
         sIntent.putExtra("CONTENT_TYPE", "text/csv")
         sIntent.addCategory(Intent.CATEGORY_DEFAULT)
 
@@ -230,8 +252,8 @@ class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware {
         }
 
         try {
-//            chooserIntent.type = "file"
-            getFileResult.launch(chooserIntent)
+            if (isAbleReadFiles) getFileResult.launch(chooserIntent)
+            else showErrorDialog("Нет разрешения на чтение файлов")
         } catch (ex: ActivityNotFoundException) {
             Toast.makeText(
                 requireContext(),
@@ -245,6 +267,10 @@ class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware {
         observe(viewModel.isLoadingLiveData) { showLoading(it) }
         observe(viewModel.errorMessageLiveData) { showErrorDialog(it) }
         observe(viewModel.goodsLiveData) { showGoods(it) }
+    }
+
+    private fun getPermission() {
+        permissionRequest.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
     }
 
     private fun showGoods(goods: List<GoodModel>) {

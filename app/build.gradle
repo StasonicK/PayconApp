@@ -89,6 +89,7 @@ dependencies {
 
     // CSV
     implementation "com.github.doyaaaaaken:kotlin-csv-jvm:$csv_version"
+    implementation 'org.apache.commons:commons-csv:1.5'
 
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"

@@ -48,9 +48,9 @@ class GoodsViewModel(private val payconRepository: PayconRepository) : ViewModel
 
         csvReader.open(file) {
             readAllWithHeaderAsSequence().forEach { row: Map<String, String> ->
-                val name = row["name"] ?: return@forEach
-                val priceString = row["price"] ?: return@forEach
-                val price = priceString.toDoubleOrNull() ?: return@forEach
+                val name = row["Title"] ?: return@forEach
+                val priceString = row["Price"] ?: return@forEach
+                val price = priceRegex.replace(priceString, "").toDoubleOrNull() ?: return@forEach
                 val goodModel = GoodModel(0, name, price)
                 list.add(goodModel)
             }
@@ -58,5 +58,10 @@ class GoodsViewModel(private val payconRepository: PayconRepository) : ViewModel
 
         goodsMutableLiveData.value = list
         isLoadingMutableLiveData.value = false
+    }
+
+    companion object {
+
+        private val priceRegex = Regex("[^0-9,.]")
     }
 }
