@@ -11,7 +11,7 @@ import com.github.doyaaaaaken.kotlincsv.client.CsvReader
 import io.reactivex.android.schedulers.AndroidSchedulers
 import java.io.File
 
-class GoodsViewModel(private val payconRepository: PayconRepository) : ViewModel() {
+class GoodsViewModel(private val payconRepository: PayconRepository, private val networkUtils: NetworkUtils) : ViewModel() {
 
     private val goodsMutableLiveData = MutableLiveData<List<GoodModel>>()
     val goodsLiveData get() = goodsMutableLiveData
@@ -27,7 +27,7 @@ class GoodsViewModel(private val payconRepository: PayconRepository) : ViewModel
         isLoadingMutableLiveData.value = true
         errorMessageMutableLiveData.value = null
 
-        if (!NetworkUtils.isNetworkAvailable(context)) {
+        if (!networkUtils.isNetworkAvailable(context)) {
             isLoadingMutableLiveData.value = false
             errorMessageMutableLiveData.value = context.getString(R.string.error_network_unavailable)
             return

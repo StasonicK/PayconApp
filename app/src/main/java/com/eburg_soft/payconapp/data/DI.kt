@@ -13,6 +13,7 @@ import org.kodein.di.provider
 import org.kodein.di.singleton
 
 val apiModule = DI.Module("api") {
+    bind<NetworkUtils>() with singleton { NetworkUtils() }
     bind<PayconApi>() with singleton { PayconApi.invoke() }
 }
 
@@ -22,6 +23,6 @@ val repositoriesModule = DI.Module("repositories") {
 }
 
 val viewModelsModule = DI.Module("viewModels") {
-    bind() from provider { GoodsViewModelFactory(instance()) }
-    bind<GoodsViewModel>() with factory { GoodsViewModel(instance()) }
+    bind() from provider { GoodsViewModelFactory(instance(), instance()) }
+    bind<GoodsViewModel>() with factory { GoodsViewModel(instance(), instance()) }
 }
