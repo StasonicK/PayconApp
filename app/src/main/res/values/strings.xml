@@ -5,6 +5,7 @@
     <string name="sign_of_ruble">₽</string>
     <string name="progress_loading_date">Загрузка</string>
     <string name="error_title">Ошибка</string>
+    <string name="error_network_unavailable">Нет доступа к интернету</string>
 
     <!-- Goods fragment -->
     <string name="goods_title">Список товаров</string>

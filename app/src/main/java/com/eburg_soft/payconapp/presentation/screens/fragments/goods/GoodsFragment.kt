@@ -225,7 +225,7 @@ class GoodsFragment : Fragment(R.layout.fragment_goods), DIAware, ActivityCompat
             goodsRecycler.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             goodsRecycler.setHasFixedSize(true)
 
-            loadFromApiBtn.setOnClickListener { viewModel.showGoodsFromApi() }
+            loadFromApiBtn.setOnClickListener { viewModel.showGoodsFromApi(requireContext()) }
             loadFromFileBtn.setOnClickListener { openFile() }
         }
     }

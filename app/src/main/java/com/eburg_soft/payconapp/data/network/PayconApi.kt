@@ -20,9 +20,8 @@ interface PayconApi {
 
     companion object {
 
-        operator fun invoke(networkConnectionInterceptor: NetworkConnectionInterceptor): PayconApi {
+        operator fun invoke(): PayconApi {
             val okkHttpclient = OkHttpClient.Builder()
-                .addInterceptor(networkConnectionInterceptor)
                 .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .connectTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(30, TimeUnit.SECONDS)

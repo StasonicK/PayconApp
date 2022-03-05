@@ -1,6 +1,5 @@
 package com.eburg_soft.payconapp.data
 
-import com.eburg_soft.payconapp.data.network.NetworkConnectionInterceptor
 import com.eburg_soft.payconapp.data.network.PayconApi
 import com.eburg_soft.payconapp.data.repositories.PayconRepositoryImpl
 import com.eburg_soft.payconapp.domain.repositories.PayconRepository
@@ -14,8 +13,7 @@ import org.kodein.di.provider
 import org.kodein.di.singleton
 
 val apiModule = DI.Module("api") {
-    bind<NetworkConnectionInterceptor>() with singleton { NetworkConnectionInterceptor(instance()) }
-    bind<PayconApi>() with singleton { PayconApi.invoke(instance()) }
+    bind<PayconApi>() with singleton { PayconApi.invoke() }
 }
 
 val repositoriesModule = DI.Module("repositories") {

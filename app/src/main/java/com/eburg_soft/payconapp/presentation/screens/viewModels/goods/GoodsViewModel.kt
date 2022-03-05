@@ -1,7 +1,10 @@
 package com.eburg_soft.payconapp.presentation.screens.viewModels.goods
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.eburg_soft.payconapp.R
+import com.eburg_soft.payconapp.data.NetworkUtils
 import com.eburg_soft.payconapp.domain.models.GoodModel
 import com.eburg_soft.payconapp.domain.repositories.PayconRepository
 import com.github.doyaaaaaken.kotlincsv.client.CsvReader
@@ -20,17 +23,21 @@ class GoodsViewModel(private val payconRepository: PayconRepository) : ViewModel
     private val errorMessageMutableLiveData = MutableLiveData<String>()
     val errorMessageLiveData get() = errorMessageMutableLiveData
 
-    fun showGoodsFromApi() {
+    fun showGoodsFromApi(context: Context) {
         isLoadingMutableLiveData.value = true
-//        isErrorMutableLiveData.value = false
         errorMessageMutableLiveData.value = null
+
+        if (!NetworkUtils.isNetworkAvailable(context)) {
+            isLoadingMutableLiveData.value = false
+            errorMessageMutableLiveData.value = context.getString(R.string.error_network_unavailable)
+            return
+        }
 
         payconRepository.getFromApiAllGoods()
             .observeOn(AndroidSchedulers.mainThread())
             .doOnError {
                 isLoadingMutableLiveData.value = false
                 errorMessageMutableLiveData.value = it.message
-//                isErrorMutableLiveData.value = true
             }
             .doOnSuccess { list: List<GoodModel> ->
                 goodsMutableLiveData.value = list
