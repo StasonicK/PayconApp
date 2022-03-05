@@ -33,5 +33,4 @@ class BundleExtractorDelegate<R, T>(private val initializer: (R) -> T) : ReadWri
         if (value == EMPTY) value = initializer(thisRef)
         return value as T
     }
-
 }

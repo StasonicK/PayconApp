@@ -1,6 +1,5 @@
 package com.eburg_soft.payconapp.presentation.screens.viewModels.goods
 
-
 /**
 Copyright 2005 Bytecode Pty Ltd.
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +26,6 @@ limitations under the License.
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.Reader
-import java.util.ArrayList
 
 /**
  * A very simple CSV reader released under a commercial-friendly license.
@@ -163,7 +161,6 @@ class CSVReader
         } while (inQuotes)
         tokensOnThisLine.add(sb.toString())
         return tokensOnThisLine.toTypedArray()
-
     }
 
     /**
@@ -192,7 +189,6 @@ class CSVReader
          */
         val DEFAULT_SKIP_LINES = 0
     }
-
 }
 /**
  * Constructs CSVReader using a comma for the separator.
